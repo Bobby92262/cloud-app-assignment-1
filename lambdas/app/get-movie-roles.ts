@@ -51,9 +51,11 @@ export const handler = async (
     const queryResult = await ddb.send(
       new QueryCommand({
         TableName: tableName,
-        KeyConditionExpression: "PK = :pk",
-        ExpressionAttributeValues: { ":pk": movieKey(movieId) },
-        // ExclusiveStartKey: lastKey,
+        KeyConditionExpression: "PK = :pk AND begins_with(SK, :skPrefix)",
+        ExpressionAttributeValues: { 
+          ":pk": movieKey(movieId),
+          ":skPrefix": "a#"
+        }
       })
     );
 
