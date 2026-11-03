@@ -1,6 +1,7 @@
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { GetCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
 import {
+  actorKey,
   ddb,
   isRoleItem,
   movieKey,
@@ -20,7 +21,33 @@ export const handler = async (
   if (movieId === undefined) {
     return response(400, { message: "movieID must be a positive integer" });
   }
-  try {
+
+  const actorIdParam = event.queryStringParameters?.actor;
+  const actorId = parseId(actorIdParam);
+
+  try{
+    if (actorIdParam !== undefined){
+      if(actorId === undefined){
+        return response(400, {message: "actorIdParam must be a positive integer" });
+      }
+
+      const getResult = await ddb.send(
+        new GetCommand({
+          TableName: tableName,
+          Key:{
+            PK: movieKey(movieId),
+            SK: actorKey(actorId),
+          },
+        })
+      );
+
+      if (!getResult.Item || !isRoleItem(getResult.Item)) {
+        return response(404, {message: "Role not found for actor" });
+      }
+
+      return response(200, {data: [toRole(getResult.Item)] });
+    }
+  
     const queryResult = await ddb.send(
       new QueryCommand({
         TableName: tableName,
