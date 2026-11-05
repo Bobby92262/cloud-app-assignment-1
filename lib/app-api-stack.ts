@@ -107,7 +107,13 @@ export class AppApiStack extends cdk.Stack {
   )
 
     const movieRolesResource = moviesResource.addResource('{movieID}').addResource('roles');
-    movieRolesResource.addMethod('GET', new apig.LambdaIntegration(getMovieRolesFn) );
+    movieRolesResource.addMethod(
+      'GET', 
+      new apig.LambdaIntegration(
+        getMovieRolesFn
+      ) ,
+      userAuth // userAuth object to require a Cognito tokem
+    );
 
     api.root
       .addResource('actors')
