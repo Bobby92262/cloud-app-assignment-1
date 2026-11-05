@@ -15,12 +15,21 @@ export const handler = async (
    
   Is as sufficient ? as checks compile time but not runtime !
   */
+
+  if (
+    typeof body.movieId !== "number" ||
+    typeof body.actorId !== "number" ||
+    typeof body.roleName !== "string" ||
+    typeof body.roleDescription !== "string" 
+  ){
+    return response(400, {message: "Invalid request body: Missing or invalid fields" })
+  }
  
   const role: Role = {
-    movieId: body.movieId as number,
-    actorId: body.actorId as number,
-    roleName: body.roleName as string,
-    roleDescription: body.roleDescription as string,
+    movieId: body.movieId,
+    actorId: body.actorId,
+    roleName: body.roleName,
+    roleDescription: body.roleDescription,
   };
 
   try {
