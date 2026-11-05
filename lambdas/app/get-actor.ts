@@ -25,6 +25,7 @@ export const handler = async (
   if (movieParam !== undefined && movieId === undefined) {
     return response(400, { message: "movie must be a positive integer" });
   }
+  
   try {
     const actorResult = await ddb.send(
       new GetCommand({
