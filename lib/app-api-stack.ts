@@ -48,8 +48,12 @@ export class AppApiStack extends cdk.Stack {
       CLIENT_ID: props.userPoolClient.userPoolClientId,
     });
 
+    // Grants read permissions to these function calls
     table.grantReadData(getMovieRolesFn);
     table.grantReadData(getActorFn);
+
+    // Add permission to POST Lambda
+    table.grantWriteData(addMovieRoleFn)
 
     // Sample data, written once when the stack is created.
     const items = seedItems();
@@ -93,6 +97,14 @@ export class AppApiStack extends cdk.Stack {
     };
     // Routes
     const moviesResource = api.root.addResource('movies');
+
+    // movies/roles resource and attached POST method
+    const moviesRoleEndpoint = moviesResource.addResource('roles');
+    moviesRoleEndpoint.addMethod(
+      'POST', 
+      new apig.LambdaIntegration(addMovieRoleFn),
+    { apiKeyRequired: false} // Disable Default API required
+  )
 
     const movieRolesResource = moviesResource.addResource('{movieID}').addResource('roles');
     movieRolesResource.addMethod('GET', new apig.LambdaIntegration(getMovieRolesFn) );
