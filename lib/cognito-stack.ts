@@ -17,7 +17,7 @@ export class CognitoStack extends cdk.Stack {
       signInAliases: { username: true, email: true },
       selfSignUpEnabled: true,
       autoVerify: { email: true },
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.RETAIN, // Keep user pool data on cdk destroy
     });
 
     this.userPoolClient = this.userPool.addClient('AppClient', {
