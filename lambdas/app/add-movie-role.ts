@@ -2,6 +2,7 @@ import type { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { PutCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb";
 import { actorKey, ddb, movieKey, type Role, tableName } from "../shared/db";
 import { isResponse, parseJsonObject, response } from "../shared/http";
+import { logRequest } from "../shared/request-logger";
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -33,6 +34,7 @@ export const handler = async (
   };
 
   try {
+    logRequest(event);
     //  TOD∏O - Add role if its IDs are valid
     await ddb.send(
       new PutCommand({

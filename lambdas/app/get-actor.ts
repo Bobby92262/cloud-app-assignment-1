@@ -27,6 +27,7 @@ export const handler = async (
   }
   
   try {
+    logRequest(event);
     const actorResult = await ddb.send(
       new GetCommand({
         TableName: tableName,
