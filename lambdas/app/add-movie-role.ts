@@ -3,11 +3,16 @@ import { PutCommand, TransactWriteCommand } from "@aws-sdk/lib-dynamodb";
 import { actorKey, ddb, movieKey, type Role, tableName } from "../shared/db";
 import { isResponse, parseJsonObject, response } from "../shared/http";
 import { logRequest } from "../shared/request-logger";
+import { parseBody } from "../shared/auth-utils";
+
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const body = parseJsonObject(event); // This method will parse the JSON body from the HTTP
+
+  logRequest(event);
+
+  const body = parseBody(event,['movieId','actorId', 'roleName', 'roleDescription']as const); // This method will parse the JSON body from the HTTP
   if (isResponse(body)) return body;
 
   /* 
@@ -15,6 +20,9 @@ export const handler = async (
   So need some form of validation.
    
   Is as sufficient ? as checks compile time but not runtime !
+
+  #UPDATED: Improved compile/runtime check with parsebody(event,requiredKeys)
+
   */
 
   if (
@@ -34,8 +42,7 @@ export const handler = async (
   };
 
   try {
-    logRequest(event);
-    //  TOD∏O - Add role if its IDs are valid
+    //  TODO - Add role if its IDs are valid
     await ddb.send(
       new PutCommand({
         TableName: tableName,
