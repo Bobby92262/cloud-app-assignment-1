@@ -12,8 +12,8 @@ export const handler = async (
 
   logRequest(event);
 
-  const body = parseBody(event,['movieId','actorId', 'roleName', 'roleDescription']as const); // This method will parse the JSON body from the HTTP
-  if (isResponse(body)) return body;
+  if (!event.body) return response(400, {message: "Missing request body"});
+  const body = JSON.parse(event.body)
 
   /* 
   Blind assertion of good incoming data, only type checked! 
